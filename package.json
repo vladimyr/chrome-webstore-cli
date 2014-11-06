@@ -1,0 +1,26 @@
+{
+  "name": "appkeeper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "cheerio": "^0.12.4",
+    "q": "^0.9.7",
+    "q-io": "^1.10.6",
+    "request": "^2.30.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vladimyr/appkeeper.git"
+  },
+  "author": "vladimyr",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/vladimyr/appkeeper/issues"
+  },
+  "homepage": "https://github.com/vladimyr/appkeeper"
+}
