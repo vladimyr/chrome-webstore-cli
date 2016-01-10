@@ -1,3 +1,6 @@
-data
+# deps
 node_modules
+
+# editor stuff
+.idea
 *.sublime-*

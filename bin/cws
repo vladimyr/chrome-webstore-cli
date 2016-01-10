@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var yargs = require('yargs');
+var util = require('util');
+var path = require('path');
+var chalk = require('chalk');
+var glob = require('glob');
+
+
+yargs.usage('\nUsage:\n  cws <command> [options]');
+
+var paths = glob.sync(path.join(__dirname, '../commands/*.js'));
+var commands = paths.map(function(filePath) {
+  var command = require(filePath);
+  yargs.command(command.name, command.desc, function actionWrapper(yargs) {
+    command.action(yargs)
+      .catch(function(err) {
+        console.error('%s %s', chalk.bold.red('Error:'), chalk.white(err.message));
+      });
+  });
+
+  return command.name;
+});
+
+yargs
+  .demand(1)
+  .help('help')
+  .alias('h', 'help')
+  .check(function(argv, opts) {
+    var command = argv._[0];
+
+    if (command === 'help') {
+      yargs.showHelp();
+      process.exit(0);
+    }
+
+    if (commands.indexOf(command) === -1) {
+      var message = util.format('%s is not valid cws command!', chalk.bold(command));
+      console.error('%s %s', chalk.bold.red('Error:'), chalk.white(message));
+      process.exit(1);
+    }
+  });
+
+yargs.argv; //jshint ignore:line
