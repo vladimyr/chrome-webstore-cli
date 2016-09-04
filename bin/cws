@@ -2,45 +2,20 @@
 
 'use strict';
 
-var yargs = require('yargs');
-var util = require('util');
-var path = require('path');
-var chalk = require('chalk');
-var glob = require('glob');
+const yargs = require('yargs');
+const chalk = require('chalk');
+const pkg = require('../package.json');
 
-
-yargs.usage('\nUsage:\n  cws <command> [options]');
-
-var paths = glob.sync(path.join(__dirname, '../commands/*.js'));
-var commands = paths.map(function(filePath) {
-  var command = require(filePath);
-  yargs.command(command.name, command.desc, function actionWrapper(yargs) {
-    command.action(yargs)
-      .catch(function(err) {
-        console.error('%s %s', chalk.bold.red('Error:'), chalk.white(err.message));
-      });
-  });
-
-  return command.name;
-});
-
-yargs
-  .demand(1)
+// Parse command line arguments.
+yargs.version(pkg.version)
+  .usage('\nUsage:\n  $0 (command) <options>')
+  .commandDir('../commands')
+  .required(1, 'Command is required!')
   .help('help')
   .alias('h', 'help')
-  .check(function(argv, opts) {
-    var command = argv._[0];
-
-    if (command === 'help') {
-      yargs.showHelp();
-      process.exit(0);
-    }
-
-    if (commands.indexOf(command) === -1) {
-      var message = util.format('%s is not valid cws command!', chalk.bold(command));
-      console.error('%s %s', chalk.bold.red('Error:'), chalk.white(message));
-      process.exit(1);
-    }
-  });
-
-yargs.argv; //jshint ignore:line
+  .strict()
+  .fail(msg => {
+    console.error(chalk.red.bold('Error:'), chalk.white(msg));
+    process.exit(1);
+  })
+  .argv; //jshint ignore:line

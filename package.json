@@ -1,6 +1,6 @@
 {
   "name": "chrome-webstore-cli",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "CLI for interacting with Google Chrome Webstore",
   "main": "index.js",
   "bin": {
@@ -16,15 +16,15 @@
   ],
   "dependencies": {
     "chalk": "^1.1.1",
-    "glob": "^6.0.4",
+    "chrome-webstore-query": "^0.1.0",
     "got": "^6.0.0",
     "hr": "^0.1.3",
+    "ora": "^0.3.0",
     "pify": "^2.3.0",
     "pinkie-promise": "^2.0.0",
-    "string-format": "^0.5.0",
+    "url-join": "^1.1.0",
     "user-home": "^2.0.0",
-    "yargs": "^3.31.0",
-    "chrome-webstore-query": "^0.1.0"
+    "yargs": "^5.0.0"
   },
   "devDependencies": {
     "locus": "^1.2.0"

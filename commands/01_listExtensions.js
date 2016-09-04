@@ -1,82 +1,61 @@
 'use strict';
 
-var cws = require('chrome-webstore-query');
-var Promise = require('pinkie-promise');
-var getInstalledIds = require('../lib/getInstalledIds.js');
-var printer = require('../lib/printExtensionInfo.js');
+const Promise = require('pinkie-promise');
+const cws = require('chrome-webstore-query');
+const utils = require('../lib/utils.js');
+const printer = require('../lib/printer.js');
 
-
-function getExtensionInfo(client, id, extensions) {
-  extensions.succeded = [];
-  extensions.failed = [];
+function fetchExtensionInfo(client, id, extensions) {
+  extensions = Object.assign(extensions, {
+    succeded: [],
+    failed: [],
+    info: {}
+  });
 
   return client.getItemInfo(id)
-    .then(function(info) {
-      extensions[id] = info;
+    .then(info => {
+      extensions.info[id] = info;
       extensions.succeded.push(id);
       return info;
     })
-    .catch(function(err) {
-      extensions.failed.push(id);
-    });
+    .catch(() => extensions.failed.push(id));
 }
 
-function printExtensionsList(options) {
+function getExtensionsInfo(options) {
   options = options || {};
 
   return Promise.all([
-    cws.getVersion(),
-    getInstalledIds(options.dir)
-  ])
-  .then(function complete(results) {
-    var version = results[0];
-    var ids = results[1];
+      cws.getVersion(),
+      utils.getInstalledIds(options.dir)
+    ])
+    .then(results => {
+      let version = results[0];
+      let ids = results[1];
 
-    var data = {
-      total: ids.length
-    };
+      let data = { total: ids.length };
 
-    var client = cws.createClient(version);
-    return Promise.all(ids.map(function(id) {
-      return getExtensionInfo(client, id, data);
-    }))
-    .then(function() {
-      return data;
+      let client = cws.createClient(version);
+      return Promise.all(ids.map(id => fetchExtensionInfo(client, id, data)))
+        .then(() => data);
     });
-  })
-  .then(function obtained(data) {
-    if (options.json) {    
-      data.succeded = data.succeded.length;
-      console.log(JSON.stringify(data, null, 2));
-      return;
-    }
-
-    printer.print(data);
-  });
-}
-
-function listExtensions(yargs) {
-  var argv = yargs
-    .usage('\nUsage:\n  cws <command>')
-    .option('json', {
-      describe: 'Output data in JSON format'
-    })
-    .option('dir', {
-      alias: 'd',
-      describe: 'Set extension directory'
-    })
-    .help('help')
-    .alias('h', 'help')
-    .argv;
-
-  return printExtensionsList({
-    dir: argv.dir,
-    json: argv.json
-  });
 }
 
 module.exports = {
-  name: 'list',
+  command: 'list',
   desc: 'List locally installed extensions',
-  action: listExtensions
+  builder(yargs) {
+    return yargs.option('j', {
+        alias: 'json',
+        describe: 'Output data in JSON format'
+      })
+      .option('d', {
+        alias: 'dir',
+        describe: 'Set extension directory'
+      })
+      .help('help');
+  },
+  handler(argv) {
+    return getExtensionsInfo(argv)
+      .then(info => printer.print(info, argv));
+  }
 };

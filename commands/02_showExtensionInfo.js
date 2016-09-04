@@ -1,52 +1,46 @@
 'use strict';
 
-var cws = require('chrome-webstore-query');
-var chalk = require('chalk');
-var listPrinter = require('../lib/printExtensionInfo.js');
+const cws = require('chrome-webstore-query');
+const printer = require('../lib/printer.js');
 
+function getExtensionInfo(id, options) {
+  let data = {
+    succeded: [],
+    failed: [],
+    total: 1,
+    info: {}
+  };
 
-function printExtensionInfo(id, options) {
   options = options || {};
 
   return cws.getVersion()
-    .then(function complete(version) {
-      var client = cws.createClient(version);
+    .then(version => {
+      let client = cws.createClient(version);
       return client.getItemInfo(id);
     })
-    .then(function obtained(data) {
-      if (options.json) {    
-        console.log(JSON.stringify(data, null, 2));
-        return;
-      }
-
-      listPrinter.printOne(data);
-    });
-}
-
-function showExtensionInfo(yargs) {
-  var argv = yargs
-    .usage('\nUsage:\n  cws <command> [options] [extensionId]')
-    .demand(1)
-    .option('json', {
-      describe: 'Output data in JSON format'
+    .then(info => {
+      data.info[id] = info;
+      data.succeded.push(id);
     })
-    .help('help')
-    .alias('h', 'help')
-    .argv;
-
-  var extensionId = argv._[1];
-
-  if (!extensionId) {
-    var message = 'Extension id is not provided!';
-    console.error('%s %s', chalk.bold.red('Error:'), chalk.white(message));
-    process.exit(1);
-  }
-
-  return printExtensionInfo(extensionId, { json: argv.json });
+    .catch(() => data.failed.push(id))
+    .then(() => data);
 }
 
 module.exports = {
-  name: 'info', 
+  command: 'info',
   desc: 'Show extension info',
-  action: showExtensionInfo
+  builder(yargs) {
+    return yargs
+      .required(1, 'Extension id is not provided!')
+      .option('j', {
+        alias: 'json',
+        describe: 'Output data in JSON format'
+      })
+      .help('help');
+  },
+  handler(argv) {
+    let id = argv._[1];
+    return getExtensionInfo(id)
+      .then(info => printer.print(info, argv));
+  }
 };
