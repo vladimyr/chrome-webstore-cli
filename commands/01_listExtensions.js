@@ -1,7 +1,7 @@
 'use strict';
 
 const Promise = require('pinkie-promise');
-const cws = require('chrome-webstore-query');
+const cws = require('chrome-webstore');
 const utils = require('../lib/utils.js');
 const printer = require('../lib/printer.js');
 
@@ -51,6 +51,9 @@ module.exports = {
       .option('d', {
         alias: 'dir',
         describe: 'Set extension directory'
+      })
+      .option('ids-only', {
+        describe: 'Output extension IDs only'
       })
       .help('help');
   },

@@ -1,6 +1,6 @@
 'use strict';
 
-const cws = require('chrome-webstore-query');
+const cws = require('chrome-webstore');
 const printer = require('../lib/printer.js');
 
 function getExtensionInfo(id, options) {

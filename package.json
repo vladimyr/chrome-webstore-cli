@@ -4,7 +4,7 @@
   "description": "CLI for interacting with Google Chrome Webstore",
   "main": "index.js",
   "bin": {
-    "cws": "./bin/cws"
+    "cws": "./bin/cli.js"
   },
   "keywords": [
     "chrome-webstore",
@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "chalk": "^1.1.1",
-    "chrome-webstore-query": "^0.1.0",
+    "chrome-webstore": "^0.1.1",
     "got": "^6.0.0",
     "hr": "^0.1.3",
     "ora": "^0.3.0",
