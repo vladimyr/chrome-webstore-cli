@@ -30,9 +30,13 @@ function getExtensionsInfo(options) {
     ])
     .then(results => {
       let version = results[0];
-      let ids = results[1];
+      let localInfo = results[1];
 
-      let data = { total: ids.length };
+      let ids = localInfo.ids;
+      let data = {
+        total: ids.length,
+        extensionDir: localInfo.extensionDir
+      };
 
       let client = cws.createClient(version);
       return Promise.all(ids.map(id => fetchExtensionInfo(client, id, data)))
