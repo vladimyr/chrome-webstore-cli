@@ -10,7 +10,7 @@ This utility enables querying Chrome Webstore from terminal by providing followi
 ## Installation
 
 ```bash    
-npm install -g vladimyr/chrome-webstore-cli
+npm install -g chrome-webstore-cli
 ```
 
 ## How to use
